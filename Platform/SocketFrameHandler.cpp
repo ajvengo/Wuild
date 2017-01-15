@@ -220,7 +220,6 @@ bool SocketFrameHandler::ReadFrames()
 	m_outputAcknowledgesSize += newSize - currentSize;
 	bool validInput = true;
 
-
 	do
 	{
 		ConsumeState state = ConsumeReadBuffer();
@@ -363,6 +362,10 @@ SocketFrameHandler::ConsumeState SocketFrameHandler::ConsumeFrameBuffer()
 	catch(std::exception & ex)
 	{
 		Syslogger(m_logContext, Syslogger::Err) << "MessageHandler ConsumeFrameBuffer() exception: " << ex.what();
+		const size_t debugSize = 40;
+		Syslogger(m_logContext, Syslogger::Err) << "buffer start:" << Syslogger::Binary(m_readBuffer.GetHolder().data(), std::min(debugSize, m_readBuffer.GetHolder().size()));
+		Syslogger(m_logContext,  Syslogger::Err) << "pendingType=" << int(m_pendingReadType) << ", frameDataBuffer [" << m_frameDataBuffer.GetSize() << "], buffer start:" << Syslogger::Binary(m_frameDataBuffer.GetHolder().data(), std::min(m_frameDataBuffer.GetSize(), debugSize));
+
 		return ConsumeState::Broken;
 	}
 	if (framestate == SocketFrame::stIncomplete || m_frameDataBuffer.EofRead())
@@ -494,6 +497,7 @@ bool SocketFrameHandler::WriteFrames()
 				break;
 		}
 	}
+
 	return true;
 }
 

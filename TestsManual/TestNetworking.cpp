@@ -55,6 +55,7 @@ public:
 		uint64_t magick;
 		stream >> magick;
 		assert(magick == s_magic);
+		throw std::runtime_error("AAAAA");
 		stream >> m_text;
 		return stOk;
 	}
